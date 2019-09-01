@@ -1,16 +1,16 @@
 var createError = require('http-errors');
-var express = require('express');
+var express = require('express');         //引入插件
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
+var indexRouter = require('./routes/index');    //引入路由
 var usersRouter = require('./routes/users');
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'views'));   
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
@@ -18,6 +18,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//解决请求跨越
+app.all('/*',function (req, res, next) { 
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With');
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+  if (req.method == 'OPTIONS') {
+    res.sendStatus(200);
+  }
+  else {
+    next();
+  }
+});
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
